@@ -1,0 +1,38 @@
+# 2016 January 23
+# https://docpad.org/docs/deploy
+
+# We use node
+machine:
+  node:
+    version: "4"
+dependencies:
+  cache_directories:
+    - "node_modules"
+
+# Deployment
+machine:
+  pre:
+    - git config --global user.email "betabullstest@gmail.com"
+    - git config --global user.name "betabullstest"
+deployment:
+  production:
+    commands:
+      - > 
+        if ([ "$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME" == "$DEPLOY_OWNER/$DEPLOY_REPO" ] &&
+            [ "$CIRCLE_BRANCH" == "$DEPLOY_BRANCH" ] &&
+            [ -z "$CI_PULL_REQUEST" ]); then
+          echo "Deploying...";
+          npm run-script deploy;
+          echo "Deloyed";
+        else
+          echo "Skipped deploy";
+        fi
+
+# Custom Configuration
+machine:
+  environment:
+    DEPLOY_OWNER: "docpad"  # this is the repository owner's username that you want tested and deployed, set correctly
+    DEPLOY_REPO: "website"  # this is the repository name that you want tested and deployed, set correctly
+    DEPLOY_BRANCH: "master"  # this is the branch name that you want tested and deployed, set correctly
+    DEPLOY_NAME: "Travis CI Deployer"  # this is the name that is used for the deployment commit, set to whatever
+    DEPLOY_EMAIL: "deployer@travis-ci.org"  # this is the email that is used for the deployment commit, set to whatever you like
